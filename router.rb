@@ -3,8 +3,8 @@ class Router
     @meals_controller = controllers[:meals_controller]
     @customers_controller = controllers[:customers_controller]
     @sessions_controller = controllers[:sessions_controller]
+    @orders_controller = controllers[:orders_controller]
     @running    = true
-    @user = nil
   end
 
   def run
@@ -13,9 +13,11 @@ class Router
 
     while @running
       # ask user to login
-      @user = @sessions_controller.sign_in
-      while @user
-        if @user.role == "manager"
+      # current_user is an instance of Employee
+      @current_user = @sessions_controller.sign_in
+      stop if @current_user == :wrong_credentials
+      while @current_user
+        if @current_user.role == "manager"
           display_manager_tasks
           action = gets.chomp.to_i
           print `clear`
@@ -38,7 +40,10 @@ class Router
     when 2 then @meals_controller.add
     when 3 then @customers_controller.list
     when 4 then @customers_controller.add
-    when 9 then destroy_session
+    when 5 then @orders_controller.list
+    when 6 then @orders_controller.list_undelivered_orders
+    when 7 then @orders_controller.add
+    when 9 then destroy_session!
     when 0 then stop
     else
       puts "Please press 1 - 4"
@@ -47,11 +52,9 @@ class Router
 
   def route_employee_action(action)
     case action
-    when 1 then ""
-    when 2 then ""
-    when 3 then ""
-    when 4 then ""
-    when 9 then destroy_session
+    when 1 then @orders_controller.list_my_orders(@current_user)
+    when 2 then @orders_controller.mark_as_delivered(@current_user)
+    when 9 then destroy_session!
     when 0 then stop
     else
       puts "Please press 1 - 4"
@@ -59,11 +62,12 @@ class Router
   end
 
   def stop
+    destroy_session!
     @running = false
   end
 
-  def destroy_session
-    @user = nil
+  def destroy_session!
+    @current_user = nil
   end
 
   def display_manager_tasks
@@ -75,6 +79,9 @@ class Router
     puts "2 - Create a new meal"
     puts "3 - List all customers"
     puts "4 - Create a new customer"
+    puts "5 - List all orders"
+    puts "6 - List undelivered orders"
+    puts "7 - Create a new order"
     puts "9 - Logout"
     puts "0 - Stop and exit the program"
   end

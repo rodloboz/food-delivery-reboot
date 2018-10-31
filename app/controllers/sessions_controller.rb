@@ -8,7 +8,6 @@ class SessionsController
   end
 
   def sign_in(counter = 1)
-    counter = 1
     # signs in a user
     # ask for username
     username = @view.ask_for_username
@@ -24,7 +23,7 @@ class SessionsController
       # else retry
       counter += 1
       @view.wrong_credentials
-      sign_in(counter) unless counter == 3 # recursion
+      counter <= 3 ? sign_in(counter) : :wrong_credentials
     end
   end
 

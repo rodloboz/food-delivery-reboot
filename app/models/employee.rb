@@ -9,6 +9,10 @@ class Employee
     @role = attributes[:role]
   end
 
+  def delivery_guy?
+    @role == "delivery_guy"
+  end
+
   def self.headers
     %i[id username password role]
   end
