@@ -8,6 +8,14 @@ class Meal
     @price = attributes[:price]
   end
 
+  def self.headers
+    %i[id name price]
+  end
+
+  def to_s
+    "Name: #{@name.capitalize} | Price: #{@price}"
+  end
+
   def to_array
     [@id, @name, @price]
   end

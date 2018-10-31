@@ -8,6 +8,14 @@ class Customer
     @address = attributes[:address]
   end
 
+  def self.headers
+    %i[id name address]
+  end
+
+  def to_s
+    "Name: #{@name.capitalize} | Address: #{@address.capitalize}"
+  end
+
   def to_array
     [@id, @name, @address]
   end
